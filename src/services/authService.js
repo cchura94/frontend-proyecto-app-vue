@@ -1,8 +1,7 @@
-import { urlApi } from "./../config/config"
-import axios from "axios"
+import { http } from "./httpInterceptor"
 
-export async function login(usuario){
-    const {data} = await axios.post(urlApi + "/auth/login", usuario)
+export async function login(usuario){    
+    const {data} = await http().post("/auth/login", usuario)
     return data;    
 }
 

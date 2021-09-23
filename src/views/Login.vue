@@ -81,6 +81,7 @@ export default {
                 try{
                     let datos = await authService.login(this.usuario)
                     console.log(datos)
+                    localStorage.setItem("authUser", JSON.stringify(datos))
                     this.$router.push("/admin")
                 }catch(error){
                     this.error = true
