@@ -31,6 +31,7 @@ export function http(){
                     let respuesta = await jwtInterceptor.post("/auth/refresh");
                     if(respuesta && respuesta.data){
                         localStorage.setItem("authUser", JSON.stringify(respuesta.data))
+                        // localStorage.clear();
                         // error.config.headers['Authorization'] = 'Bearer ' + response.data.access_token;
                         return axios(error.config)
                     }else{

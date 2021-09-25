@@ -8,6 +8,15 @@ import PlantillaAdmin from "../plantilla/PlantillaAdmin.vue"
 import Admin from "../views/admin/Admin.vue"
 import Login from "../views/Login.vue"
 
+import Producto from "../views/admin/Producto.vue"
+import Categoria from "../views/admin/Categoria.vue"
+import SucursalList from "../views/admin/sucursal/SucursalList.vue"
+import SucursalNuevo from "../views/admin/sucursal/SucursalNuevo.vue"
+import SucursalEditar from "../views/admin/sucursal/SucursalEditar.vue"
+import Usuario from "../views/admin/Usuario.vue"
+
+import {authGuard} from "./../guards/authGuard"
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -31,6 +40,7 @@ const routes = [
       {
         path: '/publicaciones',
         name: 'publicacion',
+        beforeEnter: authGuard,
         component: Publicaciones
       },
       {
@@ -48,16 +58,50 @@ const routes = [
   {
     path: '/admin',
     component: PlantillaAdmin,
+    beforeEnter: authGuard,
     children: [
       {
         path: '/',
         name: 'Admin',
         component: Admin
+      },
+      {
+        path: 'producto',
+        name: 'Producto',
+        component: Producto
+      },
+      {
+        path: 'categoria',
+        name: 'Categoria',
+        component: Categoria
+      },
+      {
+        path: 'sucursal',
+        name: 'SucursalLista',
+        component: SucursalList
+      },
+      {
+        path: 'sucursal/nuevo',
+        name: 'SucursalNuevo',
+        component: SucursalNuevo
+      },
+      {
+        path: 'sucursal/:id/editar',
+        name: 'SucursalEdit',
+        component: SucursalEditar
+      },
+      {
+        path: 'usuario',
+        name: 'Usuario',
+        component: Usuario
       }
     ]
   }
   
 ]
+
+
+
 
 const router = new VueRouter({
   mode: 'history',
@@ -65,4 +109,27 @@ const router = new VueRouter({
   routes
 })
 
+/*
+const isAuthenticated = function(){
+  try {
+      const authUser = JSON.parse(localStorage.getItem("authUser"))
+      if(authUser && authUser.access_token){
+          return true
+      }else{
+          return false
+      }
+  }catch(error){
+      return false
+  }
+}
+
+router.beforeEach((to, from, next) => {
+  console.log(to)
+  if (to.name !== 'Login' && !isAuthenticated){
+    next({ name: 'Login' })
+  }else{
+    next()
+  }
+})
+*/
 export default router

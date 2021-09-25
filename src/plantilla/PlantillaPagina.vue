@@ -21,7 +21,10 @@
             <v-icon>mdi-account</v-icon>
         </v-btn>
       </v-app-bar>
-      <router-view/>
+      <v-main>
+        <router-view/>
+
+      </v-main>
   </div>
 </template>
 
