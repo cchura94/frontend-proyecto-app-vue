@@ -1,7 +1,7 @@
 import { http } from "./httpInterceptor"
 
-export const listaProductos = async function(page, limit){
-    return await http().get(`/producto?page=${page}&limit=${limit}`);
+export const listaProductos = async function(page, limit, search){
+    return await http().get(`/producto?page=${page}&limit=${limit}&q=${search}`);
 }
 
 export const guardarProducto = async function(datos){

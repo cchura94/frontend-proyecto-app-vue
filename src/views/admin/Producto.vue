@@ -6,6 +6,7 @@
     :page="page"
     :server-items-length="total_productos"
     :loading="cargando"
+    :search="search"
   >
 
   <template v-slot:top>
@@ -19,6 +20,13 @@
           vertical
         ></v-divider>
         <v-spacer></v-spacer>
+
+        <v-text-field
+          v-model="search"
+          label="Buscar"
+          class="mx-4"
+        ></v-text-field>
+
         <v-dialog
           v-model="dialog"
           max-width="500px"
@@ -84,10 +92,14 @@
                     sm="4"
                     md="4"
                   >
-                    <v-text-field
+                    <v-select
                       v-model="editedItem.categoria_id"
+                      :items="lista_categorias"
                       label="Categoria"
-                    ></v-text-field>
+                      item-text="nombre"
+                      item-value="id"
+                    ></v-select>
+
                   </v-col>
                   <v-col
                     cols="12"
@@ -122,6 +134,7 @@
           </v-card>
         </v-dialog>
 
+
         <v-dialog v-model="dialogDelete" max-width="500px">
           <v-card>
             <v-card-title class="text-h5">Está seguro de eliminar el Producto?</v-card-title>
@@ -134,14 +147,35 @@
           </v-card>
         </v-dialog>
 
+        <v-dialog v-model="dialog_asignacion" max-width="500px">
+          <v-card>
+            <v-card-title class="text-h5">Asignación a Sucursal</v-card-title>
+            <v-card-text>
+              form
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn color="red darken-1" text @click="closeDelete">Cancelar</v-btn>
+              <v-btn color="primary" text @click="deleteItemConfirm">Asignar</v-btn>
+              <v-spacer></v-spacer>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+
       </v-toolbar>
   </template>
 
   <template v-slot:[`item.imagen`]="{ item }">
       <img width="80px" :src="`http://127.0.0.1:8000${item.imagen}`" alt="">
     </template>
-
+<template v-slot:[`item.asignacion`]="{ item }">
+  
+    <v-btn color="warning" @click="dialog_asignacion = true">Asignar a Sucursal</v-btn>
+      
+</template>
   <template v-slot:[`item.acciones`]="{ item }">
+      
+
       <v-icon
         small
         class="mr-2"
@@ -162,6 +196,7 @@
 
 <script>
 import * as prodServide from "../../services/productoService"
+import * as catService from "../../services/categoriaService"
 
 export default {
   data(){
@@ -170,11 +205,13 @@ export default {
         { text: 'ID', value: 'id' },
         { text: 'NOMBRE', value: 'nombre' },
         { text: 'PRECIO', value: 'precio' },
-        { text: 'CATEGORIA', value: 'categoria_id' },
+        { text: 'CATEGORIA', value: 'categoria.nombre' },
         { text: 'IMAGEN', value: 'imagen' },
+        { text: 'ASIGNACIÓN', value: 'asignacion' },
         { text: 'ACCIONES', value: 'acciones', sortable: false },
       ],
       lista_productos: [],
+      lista_categorias: [],
       // datatable
       opciones: {
         itemsPerPage: 5
@@ -182,7 +219,9 @@ export default {
       page: 1,
       total_productos: 0,
       cargando: true,
+      search: '',
       dialog: false,
+      dialog_asignacion: false,
       editedIndex: -1,
       editedItem: {
         nombre: '',
@@ -203,6 +242,8 @@ export default {
     }
   },
   async mounted(){
+    const {data} = await catService.listaCategorias()
+    this.lista_categorias = data;
     
     this.inicializarDatos()
     // const {data} = prodServide.listaProductos()
@@ -218,7 +259,7 @@ export default {
       const { page, itemsPerPage } = this.opciones
       
       this.cargando = true
-      const { data } = await prodServide.listaProductos(page, itemsPerPage)
+      const { data } = await prodServide.listaProductos(page, itemsPerPage, this.search)
       this.lista_productos = data.data
       this.total_productos = data.total
 
@@ -288,6 +329,13 @@ export default {
           this.editedIndex = -1
         })
       },
+
+      filterOnlyCapsText (value, search, item) {
+        return value != null &&
+          search != null &&
+          typeof value === 'string' &&
+          value.toString().toLocaleUpperCase().indexOf(search) !== -1
+      },
   },
   watch: {
     opciones: {
@@ -297,6 +345,11 @@ export default {
     },
     dialog(val){
       val || this.close()
+    },
+    search: {
+      handler(){
+        this.inicializarDatos();
+      }
     }
   }
 
