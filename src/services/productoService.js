@@ -19,3 +19,7 @@ export const mostrarProducto = async function(id){
 export const eliminarProducto = async function(id){
     return await http().delete("/producto/"+id);
 }
+
+export const asignarProductoSucursal = async function(id_prod, datos){
+    return await http().post("/producto/"+id_prod+"/asignar_sucursal", datos);
+}

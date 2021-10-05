@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import axios from "axios"
+import * as sucursalService from "../../../services/sucursalService"
 
 export default {
   data(){
@@ -67,14 +67,14 @@ export default {
   },
   async created(){
     let id = this.$route.params.id
-    const { data } = await axios.get("http://127.0.0.1:8000/api/sucursal/"+id);
+    const { data } = await sucursalService.mostrarSucursal(id);
     this.sucursal = data
   },
   methods:{
     async modificarSucursal(){
       let id = this.$route.params.id
 
-      const { data } = await axios.put("http://127.0.0.1:8000/api/sucursal/"+id, this.sucursal);
+      const { data } = await sucursalService.modificarSucursal(id, this.sucursal);
       this.$router.push("/admin/sucursal")
     }
   }

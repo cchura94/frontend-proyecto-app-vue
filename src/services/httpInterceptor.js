@@ -27,7 +27,8 @@ export function http(){
                     return Promise.reject(error);
                 }else{
                     console.log("ERROR:   401")
-                    axios.interceptors.response.eject(jwtInterceptor);
+
+                    /* axios.interceptors.response.eject(jwtInterceptor);
                     let respuesta = await jwtInterceptor.post("/auth/refresh");
                     if(respuesta && respuesta.data){
                         localStorage.setItem("authUser", JSON.stringify(respuesta.data))
@@ -37,6 +38,10 @@ export function http(){
                     }else{
                         return Promise.reject(error);
                     }
+                    */
+                   localStorage.clear();
+                    window.location.href = '/login';
+                    // return Promise.reject(error);
                 }
             }
         )

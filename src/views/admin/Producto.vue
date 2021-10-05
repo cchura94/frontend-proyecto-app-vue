@@ -151,12 +151,38 @@
           <v-card>
             <v-card-title class="text-h5">Asignación a Sucursal</v-card-title>
             <v-card-text>
-              form
+              <v-row>
+                <v-col
+                    cols="12"
+                    sm="6"
+                    md="6"
+                  >
+                    <v-select
+                      v-model="asignar_sucursal.sucursal_id"
+                      :items="lista_sucursales"
+                      label="Seleccionar Sucursal"
+                      item-text="nombre"
+                      item-value="id"
+                    ></v-select>                  
+
+                  </v-col>
+                  <v-col
+                      cols="12"
+                      sm="6"
+                      md="6"
+                    >
+                      <v-text-field
+                        v-model="asignar_sucursal.stock"
+                        label="Stock"
+                        type="number"
+                      ></v-text-field>
+                    </v-col>
+              </v-row>
             </v-card-text>
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="red darken-1" text @click="closeDelete">Cancelar</v-btn>
-              <v-btn color="primary" text @click="deleteItemConfirm">Asignar</v-btn>
+              <v-btn color="primary" text @click="asignarProductoSucursal()">Asignar</v-btn>
               <v-spacer></v-spacer>
             </v-card-actions>
           </v-card>
@@ -170,7 +196,7 @@
     </template>
 <template v-slot:[`item.asignacion`]="{ item }">
   
-    <v-btn color="warning" @click="dialog_asignacion = true">Asignar a Sucursal</v-btn>
+    <v-btn color="warning" @click="abrirDialogAsignacion(item)">Asignar a Sucursal</v-btn>
       
 </template>
   <template v-slot:[`item.acciones`]="{ item }">
@@ -197,6 +223,7 @@
 <script>
 import * as prodServide from "../../services/productoService"
 import * as catService from "../../services/categoriaService"
+import * as sucursalService from "../../services/sucursalService"
 
 export default {
   data(){
@@ -212,6 +239,7 @@ export default {
       ],
       lista_productos: [],
       lista_categorias: [],
+      lista_sucursales: [],
       // datatable
       opciones: {
         itemsPerPage: 5
@@ -239,11 +267,19 @@ export default {
       },
       imagen: false,
       dialogDelete: false,
+      asignar_sucursal: {
+        sucursal_id: 0,
+        stock: 0
+      },
+      producto_seleccionado: 0,
     }
   },
   async mounted(){
     const {data} = await catService.listaCategorias()
     this.lista_categorias = data;
+
+    const datos = await sucursalService.listaSucursal()
+    this.lista_sucursales = datos.data;
     
     this.inicializarDatos()
     // const {data} = prodServide.listaProductos()
@@ -336,6 +372,20 @@ export default {
           typeof value === 'string' &&
           value.toString().toLocaleUpperCase().indexOf(search) !== -1
       },
+
+      abrirDialogAsignacion(item){
+        this.seleccionProducto(item)
+        this.dialog_asignacion = true
+      },
+
+      seleccionProducto(prod){
+        this.producto_seleccionado = prod.id
+      },
+
+      async asignarProductoSucursal(){
+        await prodServide.asignarProductoSucursal(this.producto_seleccionado,this.asignar_sucursal)
+        this.dialog_asignacion = false
+      }
   },
   watch: {
     opciones: {

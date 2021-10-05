@@ -108,8 +108,8 @@
 </template>
 
 <script>
-import axios from "axios"
-
+// import axios from "axios"
+import * as sucursalService from "../../../services/sucursalService"
 export default {
   data(){
     return {
@@ -122,14 +122,14 @@ export default {
     }
   },
   async created(){
-    const respuesta = await axios.get('http://127.0.0.1:8000/api/sucursal');
+    const respuesta = await sucursalService.listaSucursal()
     console.log(respuesta)
     this.lista_sucursales = respuesta.data
   },
   methods: {
     async eliminarSucursal(sucursal, pos){
       if(confirm("Está seguro de eliminar la Sucursal?")){
-        await axios.delete('http://127.0.0.1:8000/api/sucursal/'+sucursal.id);
+        await sucursalService.eliminarSucursal(sucursal.id);
       this.lista_sucursales.splice(pos, 1);
       }
     }
